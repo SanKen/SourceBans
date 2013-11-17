@@ -1,0 +1,69 @@
+{% if App.user.data.hasPermission('LIST_GAMES') %}
+    <section class="tab-pane fade" id="pane-list">
+{% do this.widget('zii.widgets.grid.CGridView', {
+	'id': 'games-grid',
+	'dataProvider': games.search,
+	'columns': [
+		{
+			'header': false,
+			'headerHtmlOptions': {
+				'class': 'icon',
+			},
+			'htmlOptions': {
+				'class': 'icon',
+			},
+			'name': 'icon',
+			'type': 'html',
+			'value': 'CHtml::image(Yii::app()->baseUrl . "/images/games/" . $data->icon, $data->name)',
+		},
+		'name',
+		{
+			'headerHtmlOptions': {
+				'class': 'SBGame_folder',
+			},
+			'htmlOptions': {
+				'class': 'SBGame_folder',
+			},
+			'name': 'folder',
+		},
+		{
+			'class': 'CButtonColumn',
+			'buttons': {
+				'update': {
+					'visible': 'Yii::app()->user->data->hasPermission("EDIT_GAMES")',
+				},
+				'delete': {
+					'visible': 'Yii::app()->user->data->hasPermission("DELETE_GAMES")',
+				},
+			},
+			'template': '{update} {delete}',
+			'updateButtonLabel': t('sourcebans', 'Edit'),
+			'updateButtonUrl': 'Yii::app()->createUrl("games/edit", array("id" => $data->primaryKey))',
+			'deleteButtonUrl': 'Yii::app()->createUrl("games/delete", array("id" => $data->primaryKey))',
+			'visible': App.user.data.hasPermission('DELETE_GAMES', 'EDIT_GAMES'),
+		},
+	],
+	'cssFile': false,
+	'itemsCssClass': 'items table table-accordion table-condensed table-hover',
+	'pager': {
+		'class': 'bootstrap.widgets.TbPager',
+	},
+	'pagerCssClass': 'pagination pagination-right',
+	'summaryCssClass': '',
+	'summaryText': false,
+}) %}
+    </section>
+{% endif %}
+{% if App.user.data.hasPermission('ADD_GAMES') %}
+    <section class="tab-pane fade" id="pane-add">
+{% do this.renderPartial('/games/_form', {
+	'action': ['games/add'],
+	'model': game,
+}) %}
+    </section>
+    <section class="tab-pane fade" id="pane-map-image">
+{% do this.renderPartial('/games/_map_image_form', {
+	'model': map_image,
+}) %}
+    </section>
+{% endif %}

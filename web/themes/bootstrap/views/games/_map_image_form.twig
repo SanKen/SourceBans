@@ -1,0 +1,47 @@
+{% set form = this.beginWidget('CActiveForm', {
+	'id': 'map-image-form',
+	'action': ['games/mapImage'],
+	'enableClientValidation': true,
+	'clientOptions': {
+		'inputContainer': '.control-group',
+		'validateOnSubmit': true,
+	},
+	'errorMessageCssClass': 'help-inline',
+	'htmlOptions': {
+		'class': 'form-horizontal',
+		'enctype': 'multipart/form-data',
+	},
+}) %}
+
+  <div class="control-group">
+    {{ form.label(model, 'game_id', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.dropDownList(model, 'game_id', C.Html.listData(SB.Game.model.findAll({'order': 't.name'}), 'id', 'name')) }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.labelEx(model, 'filename', {'class': 'control-label'}) }}
+    <div class="controls">
+      <div class="fileupload fileupload-{{ model.filename is empty ? 'new' : 'exists' }}" data-provides="fileupload">
+        <div class="input-append">
+          <div class="uneditable-input span3"><i class="icon-file fileupload-exists"></i> <span class="fileupload-preview">{{ model.filename }}</span></div>
+          <span class="btn btn-file">
+            <span class="fileupload-new">{{ t('sourcebans', 'Select') }}</span>
+            <span class="fileupload-exists">{{ t('sourcebans', 'Change') }}</span>
+            {{ form.fileField(model, 'filename') }}
+          </span>
+          <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">{{ t('sourcebans', 'Remove') }}</a>
+        </div>
+      </div>
+      {{ form.error(model, 'filename') }}
+    </div>
+  </div>
+
+  <div class="control-group buttons">
+    <div class="controls">
+      {{ C.Html.submitButton(t('sourcebans', 'Save'), {'class': 'btn'}) }}
+    </div>
+  </div>
+
+{% do this.endWidget %}

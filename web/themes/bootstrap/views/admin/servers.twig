@@ -1,0 +1,134 @@
+{% if App.user.data.hasPermission('LIST_SERVERS') %}
+    <section class="tab-pane fade" id="pane-list">
+{% do this.widget('zii.widgets.grid.CGridView', {
+	'id': 'servers-grid',
+	'dataProvider': servers.search,
+	'columns': [
+		{
+			'class': 'CCheckBoxColumn',
+			'selectableRows': 2,
+		},
+		{
+			'headerHtmlOptions': {
+				'class': 'icon',
+			},
+			'htmlOptions': {
+				'class': 'icon',
+			},
+			'name': 'game.name',
+			'type': 'html',
+			'value': 'CHtml::image(Yii::app()->baseUrl . "/images/games/" . $data->game->icon, $data->game->name)',
+		},
+		{
+			'header': t('sourcebans', 'Hostname'),
+			'headerHtmlOptions': {
+				'class': 'ServerQuery_hostname',
+			},
+			'htmlOptions': {
+				'class': 'ServerQuery_hostname',
+			},
+			'value': 'Yii::t("sourcebans", "components.ServerQuery.loading") . " (" . $data->ip . ":" . $data->port . ")"',
+		},
+		{
+			'header': t('sourcebans', 'Players'),
+			'headerHtmlOptions': {
+				'class': 'ServerQuery_players',
+			},
+			'htmlOptions': {
+				'class': 'ServerQuery_players',
+			},
+			'value': 'Yii::t("sourcebans", "N/A")',
+		},
+		{
+			'class': 'CButtonColumn',
+			'buttons': {
+				'admins': {
+					'label': t('sourcebans', 'controllers.servers.admins.title'),
+					'url': 'Yii::app()->createUrl("servers/admins", array("id" => $data->primaryKey))',
+					'imageUrl': false,
+					'visible': 'Yii::app()->user->data->hasPermission("LIST_ADMINS")',
+				},
+				'rcon': {
+					'label': t('sourcebans', 'RCON'),
+					'url': 'Yii::app()->createUrl("servers/rcon", array("id" => $data->primaryKey))',
+					'imageUrl': false,
+					'visible': '!empty($data->rcon) && Yii::app()->user->data->hasFlag(SM_RCON)',
+				},
+				'update': {
+					'visible': 'Yii::app()->user->data->hasPermission("EDIT_SERVERS")',
+				},
+				'delete': {
+					'visible': 'Yii::app()->user->data->hasPermission("DELETE_SERVERS")',
+				},
+			},
+			'template': '{rcon} {admins} {update} {delete}',
+			'updateButtonLabel': t('sourcebans', 'Edit'),
+			'updateButtonUrl': 'Yii::app()->createUrl("servers/edit", array("id" => $data->primaryKey))',
+			'deleteButtonUrl': 'Yii::app()->createUrl("servers/delete", array("id" => $data->primaryKey))',
+			'visible': App.user.data.hasFlag(constant('SM_RCON')) or App.user.data.hasPermission('DELETE_SERVERS', 'EDIT_SERVERS'),
+		},
+	],
+	'afterAjaxUpdate': 'js:queryServers',
+	'cssFile': false,
+	'itemsCssClass': 'items table table-accordion table-condensed table-hover',
+	'pager': {
+		'class': 'bootstrap.widgets.TbPager',
+	},
+	'pagerCssClass': 'pagination pagination-right',
+	'rowHtmlOptionsExpression': 'array(
+		"data-key"=>$data->primaryKey,
+	)',
+	'summaryCssClass': '',
+	'summaryText': false,
+}) %}
+    </section>
+{% endif %}
+{% if App.user.data.hasPermission('ADD_SERVERS') %}
+    <section class="tab-pane fade" id="pane-add">
+{% do this.renderPartial('/servers/_form', {
+	'action': ['servers/add'],
+	'model': server,
+}) %}
+    </section>
+{% endif %}
+
+{% do App.clientScript.registerScript('admin_servers_queryServer', '
+  function queryServer(id, callback) {
+    if(typeof(id) == "function") {
+      callback = id;
+      id = 0;
+    }
+    else {
+      id = id || 0;
+    }
+    
+    $.getJSON("' ~ this.createUrl('servers/info', {'id': '__ID__'}) ~ '".replace("__ID__", id), function(servers) {
+      if(!$.isArray(servers)) {
+        servers = [servers];
+      }
+      
+      $.each(servers, function(i, server) {
+        var $row = $("#servers-grid tr[data-key=\\"" + server.id + "\\"]");
+        $row.find(".ServerQuery_hostname").html(server.error ? server.error.message : server.hostname);
+        $row.find(".ServerQuery_players").text(server.error ? "' ~ t('sourcebans', 'N/A') ~ '" : server.numplayers + "/" + server.maxplayers);
+        
+        if(typeof(callback) == "function") {
+          callback(server.id);
+        }
+      });
+      
+      if(!id && typeof(callback) == "function") {
+        callback();
+      }
+    });
+  }
+  function queryServers() {
+    $("#servers-grid tr[data-key]").each(function() {
+      var id = $(this).data("key");
+      
+      queryServer(id);
+    });
+  }
+  
+  queryServers();
+') %}

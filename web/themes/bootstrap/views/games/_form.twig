@@ -1,0 +1,57 @@
+{% set form = this.beginWidget('CActiveForm', {
+	'id': 'game-form',
+	'action': action is defined ? action : null,
+	'enableAjaxValidation': true,
+	'enableClientValidation': true,
+	'clientOptions': {
+		'inputContainer': '.control-group',
+		'validateOnSubmit': true,
+	},
+	'errorMessageCssClass': 'help-inline',
+	'htmlOptions': {
+		'class': 'form-horizontal',
+		'enctype': 'multipart/form-data',
+	},
+}) %}
+
+  <div class="control-group">
+    {{ form.labelEx(model, 'name', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.textField(model, 'name', {'size': 32, 'maxlength': 32}) }}
+      {{ form.error(model, 'name') }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.labelEx(model, 'folder', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.textField(model, 'folder', {'size': 32, 'maxlength': 32}) }}
+      {{ form.error(model, 'folder') }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.labelEx(model, 'icon', {'class': 'control-label'}) }}
+    <div class="controls">
+      <div class="fileupload fileupload-{{ model.isNewRecord or model.icon is empty ? 'new' : 'exists' }}" data-provides="fileupload">
+        <div class="input-append">
+          <div class="uneditable-input span3"><i class="icon-file fileupload-exists"></i> <span class="fileupload-preview">{{ not model.isNewRecord ? model.icon : '' }}</span></div>
+          <span class="btn btn-file">
+            <span class="fileupload-new">{{ t('sourcebans', 'Select') }}</span>
+            <span class="fileupload-exists">{{ t('sourcebans', 'Change') }}</span>
+            {{ form.fileField(model, 'icon') }}
+          </span>
+          <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">{{ t('sourcebans', 'Remove') }}</a>
+        </div>
+      </div>
+      {{ form.error(model, 'icon') }}
+    </div>
+  </div>
+
+  <div class="control-group buttons">
+    <div class="controls">
+      {{ C.Html.submitButton(t('sourcebans', 'Save'), {'class': 'btn'}) }}
+    </div>
+  </div>
+
+{% do this.endWidget %}

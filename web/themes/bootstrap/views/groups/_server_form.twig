@@ -1,0 +1,72 @@
+{% set form = this.beginWidget('CActiveForm', {
+	'id': 'server-group-form',
+	'action': action is defined ? action : null,
+	'enableAjaxValidation': true,
+	'enableClientValidation': true,
+	'clientOptions': {
+		'inputContainer': '.control-group',
+		'validateOnSubmit': true,
+	},
+	'errorMessageCssClass': 'help-inline',
+	'htmlOptions': {
+		'class': 'form-horizontal',
+	},
+}) %}
+
+  <div class="control-group">
+    {{ form.labelEx(model, 'name', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.textField(model, 'name', {'size': 32, 'maxlength': 32}) }}
+      {{ form.error(model, 'name') }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.labelEx(model, 'immunity', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.numberField(model, 'immunity') }}
+      {{ form.error(model, 'immunity') }}
+    </div>
+  </div>
+
+  <div class="flags control-group">
+    {{ form.label(model, 'flags', {'class': 'control-label'}) }}
+    <div class="controls">
+{% for flag, description in SourceBans.app.flags %}
+      {% set checkbox = C.Html.checkBox('SBServerGroup[flags][' ~ flag ~ ']', not model.isNewRecord and flag in model.flags, {'value': flag}) ~ description %}
+      {{ C.Html.label(checkbox, 'SBServerGroup_flags_' ~ flag, {'class': 'checkbox'}) }}
+{% endfor %}
+      {{ C.Html.hiddenField('SBServerGroup[flags]') }}
+      {{ form.error(model, 'flags') }}
+    </div>
+  </div>
+
+  <div class="control-group buttons">
+    <div class="controls">
+      {{ C.Html.submitButton(t('sourcebans', 'Save'), {'class': 'btn'}) }}
+    </div>
+  </div>
+
+{% do this.endWidget %}
+
+{% do App.clientScript.registerScript('flags_change', '
+  $("#SBServerGroup_flags_z").change(function() {
+    $(".flags :checkbox").prop("checked", $(this).is(":checked"));
+    
+    $("#SBServerGroup_flags").val($(this).is(":checked") ? "' ~ constant('SM_ROOT') ~ '" : "");
+  });
+  $(".flags :checkbox").not("#SBServerGroup_flags_z").change(function() {
+    $("#SBServerGroup_flags_z").prop("checked", $(".flags :checkbox").not("#SBServerGroup_flags_z").are(":checked"));
+    
+    if(!$("#SBServerGroup_flags_z").is(":checked")) {
+      $("#SBServerGroup_flags").val("");
+      $(".flags :checkbox:checked").each(function(i, el) {
+        $("#SBServerGroup_flags")[0].value += $(el).val();
+      });
+    }
+  });
+  
+  if($("#SBServerGroup_flags_z").is(":checked")) {
+    $("#SBServerGroup_flags_z").trigger("change");
+  }
+') %}

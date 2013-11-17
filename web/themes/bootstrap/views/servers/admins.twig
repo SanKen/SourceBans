@@ -1,0 +1,18 @@
+    <section class="tab-pane" id="pane-admins">
+      <table class="table table-condensed">
+        <thead>
+          <tr>
+            <th style="width: 50%">{{ t('sourcebans', 'Name') }}</th>
+            <th style="width: 50%">{{ t('sourcebans', 'Identity') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+{% for admin in admins %}
+          <tr>
+            <td>{{ admin.name }}</td>
+            <td>{{ admin.identity }}</td>
+          </tr>
+{% endfor %}
+        </tbody>
+      </table>
+    </section>

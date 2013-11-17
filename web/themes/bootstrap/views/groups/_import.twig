@@ -1,0 +1,36 @@
+{% set form = this.beginWidget('CActiveForm', {
+	'action': ['groups/import'],
+	'clientOptions': {
+		'inputContainer': '.control-group',
+	},
+	'errorMessageCssClass': 'help-inline',
+	'htmlOptions': {
+		'class': 'form-horizontal',
+		'enctype': 'multipart/form-data',
+	},
+}) %}
+
+  <div class="control-group">
+    {{ C.Html.label(t('sourcebans', 'File'), 'file', {'class': 'control-label'}) }}
+    <div class="controls">
+      <div class="fileupload fileupload-new" data-provides="fileupload">
+        <div class="input-append">
+          <div class="uneditable-input span3"><i class="icon-file fileupload-exists"></i> <span class="fileupload-preview"></span></div>
+          <span class="btn btn-file">
+            <span class="fileupload-new">{{ t('sourcebans', 'Select') }}</span>
+            <span class="fileupload-exists">{{ t('sourcebans', 'Change') }}</span>
+            {{ C.Html.fileField('file') }}
+          </span>
+          <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">{{ t('sourcebans', 'Remove') }}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="control-group buttons">
+    <div class="controls">
+      {{ C.Html.submitButton(t('sourcebans', 'Import'), {'class': 'btn'}) }}
+    </div>
+  </div>
+
+{% do this.endWidget %}

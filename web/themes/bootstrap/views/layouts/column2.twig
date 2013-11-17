@@ -1,0 +1,59 @@
+{% do this.beginContent('//layouts/main') %}
+
+<div class="row">
+  <nav class="span3" id="sidebar">
+{% do this.widget('zii.widgets.CMenu', {
+	'id': 'menu',
+	'items': this.menu,
+	'htmlOptions': {
+		'class': 'nav nav-list',
+	},
+}) %}
+  </nav>
+  <section class="tab-content span9" id="content">
+{{ content|raw }}
+  </section>
+</div>
+
+{% do App.clientScript.registerCoreScript('bbq') %}
+{% do App.clientScript.registerScript('hashchange', '
+  $(window).bind("hashchange", function(e) {
+    var pane  = $.param.fragment().replace("/", "-"),
+        $pane = $("#pane-" + pane);
+    if(!$pane.length) {
+      $pane = $(".tab-pane:first");
+      if(!$pane.length)
+        return;
+      
+      pane  = $pane.prop("id").substring(5);
+    }
+    
+    var $active    = $(".tab-pane.active"),
+    // Do not animate on first hashchange,
+    // because $.support.transition is undefined until domready
+        transition = $.support.transition && $pane.hasClass("fade");
+    
+    function next() {
+      if($active.length) {
+        $("#menu li.active").removeClass("active");
+        $active.removeClass("active");
+      }
+      
+      $("#menu li:has(a[href=\\"#" + pane + "\\"])").addClass("active");
+      $pane.addClass("active");
+      
+      if(transition) {
+        $pane[0].offsetWidth; // reflow for transition
+      }
+      $pane.addClass("in");
+    }
+    
+    transition && $active.length
+      ? $active.one($.support.transition.end, next)
+      : next();
+    
+    $active.removeClass("in");
+  }).trigger("hashchange");
+') %}
+
+{% do this.endContent %}

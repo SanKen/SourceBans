@@ -1,0 +1,101 @@
+{% set form = this.beginWidget('CActiveForm', {
+	'id': 'ban-form',
+	'action': action is defined ? action : null,
+	'enableAjaxValidation': true,
+	'enableClientValidation': true,
+	'clientOptions': {
+		'inputContainer': '.control-group',
+		'validateOnSubmit': true,
+	},
+	'errorMessageCssClass': 'help-inline',
+	'htmlOptions': {
+		'class': 'form-horizontal',
+		'enctype': 'multipart/form-data',
+	},
+}) %}
+
+  <div class="control-group">
+    {{ form.labelEx(model, 'name', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.textField(model, 'name', {'size': 60, 'maxlength': 64}) }}
+      {{ form.error(model, 'name') }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.label(model, 'type', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.dropDownList(model, 'type', SB.Ban.getTypes) }}
+      {{ form.error(model, 'type') }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.label(model, 'steam', {'class': 'control-label', 'required': true}) }}
+    <div class="controls">
+      {{ form.textField(model, 'steam', {'size': 32, 'maxlength': 32}) }}
+      {{ form.error(model, 'steam') }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.label(model, 'ip', {'class': 'control-label', 'required': true}) }}
+    <div class="controls">
+      {{ form.textField(model, 'ip', {'size': 15, 'maxlength': 15}) }}
+      {{ form.error(model, 'ip') }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.labelEx(model, 'reason', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.textArea(model, 'reason', {'size': 60, 'maxlength': 255}) }}
+      {{ form.error(model, 'reason') }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.label(model, 'length', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.dropDownList(model, 'length', SB.Ban.getTimes()) }}
+      {{ form.error(model, 'length') }}
+    </div>
+  </div>
+
+{% if model.isNewRecord %}
+  <div class="control-group">
+    {{ C.Html.label(model.getAttributeLabel('demo.filename'), 'SBDemo_filename', {'class': 'control-label'}) }}
+    <div class="controls">
+      <div class="fileupload fileupload-new" data-provides="fileupload">
+        <div class="input-append">
+          <div class="uneditable-input span3"><i class="icon-file fileupload-exists"></i> <span class="fileupload-preview"></span></div>
+          <span class="btn btn-file">
+            <span class="fileupload-new">{{ t('sourcebans', 'Select') }}</span>
+            <span class="fileupload-exists">{{ t('sourcebans', 'Change') }}</span>
+            {{ form.fileField(demo, 'filename') }}
+          </span>
+          <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">{{ t('sourcebans', 'Remove') }}</a>
+        </div>
+      </div>
+      {{ form.error(demo, 'filename', null, true, false) }}
+    </div>
+  </div>
+{% endif %}
+
+  <div class="control-group buttons">
+    <div class="controls">
+      {{ C.Html.submitButton(t('sourcebans', 'Save'), {'class': 'btn'}) }}
+    </div>
+  </div>
+
+{% do this.endWidget %}
+
+{% do App.clientScript.registerScript('type_change', '
+  $("#SBBan_type").change(function() {
+    if($("#SBBan_steam").val() == "" || $("#SBBan_steam").val() == "STEAM_")
+      $("#SBBan_steam").val($(this).val() == ' ~ constant('SBBan::STEAM_TYPE') ~ ' ? "STEAM_" : "");
+    
+    $("label[for=\\"SBBan_steam\\"] .required").toggle($(this).val() == ' ~ constant('SBBan::STEAM_TYPE') ~ ');
+    $("label[for=\\"SBBan_ip\\"] .required").toggle($(this).val() == ' ~ constant('SBBan::IP_TYPE') ~ ');
+  }).trigger("change");
+') %}

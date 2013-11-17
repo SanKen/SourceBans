@@ -1,0 +1,209 @@
+    <section class="tab-pane fade" id="pane-permissions">
+      <div class="row-fluid">
+        <div class="span6">
+          <h3>{{ t('sourcebans', 'Server permissions') }}</h3>
+          <ul>
+{% for flag, description in SourceBans.app.flags %}
+{% if flag != constant('SM_ROOT') and App.user.data.hasFlag(flag) %}
+            <li>{{ description }}</li>
+{% endif %}
+{% endfor %}
+          </ul>
+        </div>
+        <div class="span6">
+          <h3>{{ t('sourcebans', 'Web permissions') }}</h3>
+          <ul>
+{% for name, description in SourceBans.app.permissions %}
+{% if name != 'OWNER' and App.user.data.hasPermission(name) %}
+            <li>{{ description }}</li>
+{% endif %}
+{% endfor %}
+          </ul>
+        </div>
+      </div>
+
+    </section>
+    <section class="tab-pane fade" id="pane-settings">
+{% set form = this.beginWidget('CActiveForm', {
+	'id': 'settings-form',
+	'enableAjaxValidation': true,
+	'enableClientValidation': true,
+	'clientOptions': {
+		'inputContainer': '.control-group',
+		'validateOnSubmit': true,
+	},
+	'errorMessageCssClass': 'help-inline',
+	'htmlOptions': {
+		'class': 'form-horizontal',
+	},
+}) %}
+{% do model.setScenario('settings') %}
+
+  <div class="control-group">
+    {{ form.label(model, 'language', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.dropDownList(model, 'language', SourceBans.app.languages, {'empty': '- ' ~ t('sourcebans', 'Default setting') ~ ' -'}) }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.label(model, 'theme', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.dropDownList(model, 'theme', SourceBans.app.themes, {'empty': '- ' ~ t('sourcebans', 'Default setting') ~ ' -'}) }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.label(model, 'timezone', {'class': 'control-label'}) }}
+    <div class="controls">
+      {# form.dropDownList(model, 'timezone', LocaleData.getTimezones, {}'class': 'span6', 'empty': '- ' ~ t('sourcebans', 'Default setting') ~ ' -'}) #}
+    </div>
+  </div>
+
+  <div class="control-group buttons">
+    <div class="controls">
+      {{ C.Html.hiddenField('scenario', model.scenario) }}
+      {{ C.Html.submitButton(t('sourcebans', 'Save'), {'class': 'btn'}) }}
+    </div>
+  </div>
+
+{% do this.endWidget %}
+    </section>
+    <section class="tab-pane fade" id="pane-email">
+{% set form = this.beginWidget('CActiveForm', {
+	'id': 'email-form',
+	'enableAjaxValidation': true,
+	'enableClientValidation': true,
+	'clientOptions': {
+		'inputContainer': '.control-group',
+		'validateOnSubmit': true,
+	},
+	'errorMessageCssClass': 'help-inline',
+	'htmlOptions': {
+		'class': 'form-horizontal',
+	},
+}) %}
+{% do model.setScenario('email') %}
+
+  <div class="control-group">
+    {{ form.label(model, 'email', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.textField(model, 'email', {'size': 60, 'maxlength': 64, 'readonly': true}) }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.labelEx(model, 'new_email', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.textField(model, 'new_email', {'size': 60, 'maxlength': 64}) }}
+      {{ form.error(model, 'new_email') }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.labelEx(model, 'confirm_email', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.textField(model, 'confirm_email', {'size': 60, 'maxlength': 64}) }}
+      {{ form.error(model, 'confirm_email') }}
+    </div>
+  </div>
+
+  <div class="control-group buttons">
+    <div class="controls">
+      {{ C.Html.hiddenField('scenario', model.scenario) }}
+      {{ C.Html.submitButton(t('sourcebans', 'Save'), {'class': 'btn'}) }}
+    </div>
+  </div>
+
+{% do this.endWidget %}
+    </section>
+    <section class="tab-pane fade" id="pane-password">
+{% set form = this.beginWidget('CActiveForm', {
+	'id': 'password-form',
+	'enableAjaxValidation': true,
+	'enableClientValidation': true,
+	'clientOptions': {
+		'inputContainer': '.control-group',
+		'validateOnSubmit': true,
+	},
+	'errorMessageCssClass': 'help-inline',
+	'htmlOptions': {
+		'class': 'form-horizontal',
+	},
+}) %}
+{% do model.setScenario('password') %}
+
+  <div class="control-group">
+    {{ form.labelEx(model, 'current_password', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.passwordField(model, 'current_password', {'size': 60, 'maxlength': 64}) }}
+      {{ form.error(model, 'current_password') }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.labelEx(model, 'new_password', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.passwordField(model, 'new_password', {'size': 60, 'maxlength': 64}) }}
+      {{ form.error(model, 'new_password') }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.labelEx(model, 'confirm_password', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.passwordField(model, 'confirm_password', {'size': 60, 'maxlength': 64}) }}
+      {{ form.error(model, 'confirm_password') }}
+    </div>
+  </div>
+
+  <div class="control-group buttons">
+    <div class="controls">
+      {{ C.Html.hiddenField('scenario', model.scenario) }}
+      {{ C.Html.submitButton(t('sourcebans', 'Save'), {'class': 'btn'}) }}
+    </div>
+  </div>
+
+{% do this.endWidget %}
+    </section>
+    <section class="tab-pane fade" id="pane-server-password">
+{% set form = this.beginWidget('CActiveForm', {
+	'id': 'server-password-form',
+	'enableAjaxValidation': true,
+	'enableClientValidation': true,
+	'clientOptions': {
+		'inputContainer': '.control-group',
+		'validateOnSubmit': true,
+	},
+	'errorMessageCssClass': 'help-inline',
+	'htmlOptions': {
+		'class': 'form-horizontal',
+	},
+}) %}
+{% do model.setScenario('server_password') %}
+
+  <div class="control-group">
+    {{ form.labelEx(model, 'new_server_password', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.passwordField(model, 'new_server_password', {'size': 60, 'maxlength': 64}) }}
+      {{ form.error(model, 'new_server_password') }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.labelEx(model, 'confirm_server_password', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.passwordField(model, 'confirm_server_password', {'size': 60, 'maxlength': 64}) }}
+      {{ form.error(model, 'confirm_server_password') }}
+    </div>
+  </div>
+
+  <div class="control-group buttons">
+    <div class="controls">
+      {{ C.Html.hiddenField('scenario', model.scenario) }}
+      {{ C.Html.submitButton(t('sourcebans', 'Save'), {'class': 'btn'}) }}
+    </div>
+  </div>
+
+{% do this.endWidget %}
+    </section>

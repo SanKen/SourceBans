@@ -1,0 +1,60 @@
+    <div class="row">
+      <div class="span8" style="float: none; margin: 0 auto;">
+{% do this.widget('zii.widgets.CMenu', {
+	'id': 'admin',
+	'items': this.menu,
+	'encodeLabel': false,
+	'htmlOptions': {
+		'class': 'nav',
+		'style': 'overflow: auto',
+	},
+}) %}
+      </div>
+      <div class="span8" style="float: none; margin: 0 auto;">
+        <table class="table table-stat">
+          <tbody>
+            <tr>
+              <td class="value" width="20%">{{ total_protests }}</td>
+              <td width="30%">{{ t('sourcebans', 'controllers.admin.bans.menu.protests') }}</td>
+              <td class="value" width="20%">{{ total_archived_protests }}</td>
+              <td width="30%">{{ t('sourcebans', 'Archived protests') }}</td>
+            </tr>
+            <tr>
+              <td class="value">{{ total_submissions }}</td>
+              <td>{{ t('sourcebans', 'controllers.admin.bans.menu.submissions') }}</td>
+              <td class="value">{{ total_archived_submissions }}</td>
+              <td>{{ t('sourcebans', 'Archived submissions') }}</td>
+            </tr>
+            <tr>
+              <td class="value">{{ demosize }}</td>
+              <td>{{ t('sourcebans', 'Demos') }}</td>
+              <td class="value">{{ total_blocks }}</td>
+              <td>{{ t('sourcebans', 'Players blocked') }}</td>
+            </tr>
+            <tr>
+              <td class="value"><span id="relver">...</span></td>
+              <td>{{ t('sourcebans', 'Latest release') }}</td>
+              <td class="text-center" colspan="2"><span id="versionmsg">{{ t('sourcebans', 'Please wait') }}...</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+{% do App.clientScript.registerScript('admin_index', '
+  $.getJSON("' ~ this.createUrl('admin/version') ~ '", function(data) {
+    if(data.error) {
+      $("#relver").text("' ~ t('sourcebans', 'Error') ~ '").addClass("text-error");
+      $("#versionmsg").text(data.error).addClass("text-error");
+      return;
+    }
+    if(data.update) {
+      $("#versionmsg").text("' ~ t('sourcebans', 'A new release is available.') ~ '").addClass("text-error");
+    }
+    else {
+      $("#versionmsg").text("' ~ t('sourcebans', 'You have the latest release.') ~ '").addClass("text-success");
+    }
+    
+    $("#relver").text(data.version);
+    $("#versionmsg").css("font-weight", "bold");
+  });
+') %}

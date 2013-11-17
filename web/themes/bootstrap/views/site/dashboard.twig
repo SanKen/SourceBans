@@ -1,0 +1,106 @@
+    <div class="row">
+    <section class="span12 intro">
+{% if SourceBans.app.settings.dashboard_title is not empty %}
+      <h3>{{ SourceBans.app.settings.dashboard_title }}</h3>
+{% endif %}
+      {{ SourceBans.app.settings.dashboard_text|raw }}
+    </section>
+    </div>
+    
+{{ this.renderPartial('servers', {
+	'isDashboard': true,
+	'servers': servers,
+}, true) }}
+    
+    <div class="row">
+    <section class="bans span6">
+{% do this.widget('zii.widgets.grid.CGridView', {
+	'id': 'bans-grid',
+	'dataProvider': bans,
+	'columns': [
+		{
+			'header': t('sourcebans', 'Game'),
+			'headerHtmlOptions': {
+				'class': 'icon',
+			},
+			'htmlOptions': {
+				'class': 'icon',
+			},
+			'name': 'server.game.name',
+			'type': 'html',
+			'value': 'CHtml::image(Yii::app()->baseUrl . "/images/games/" . (isset($data->server) ? $data->server->game->icon : "web.png"), isset($data->server) ? $data->server->game->name : "SourceBans")',
+		},
+		{
+			'headerHtmlOptions': {
+				'class': 'datetime',
+			},
+			'htmlOptions': {
+				'class': 'datetime',
+			},
+			'name': 'create_time',
+			'type': 'datetime',
+		},
+		'name',
+		{
+			'headerHtmlOptions': {
+				'class': 'length',
+			},
+			'htmlOptions': {
+				'class': 'length',
+			},
+			'name': 'length',
+			'value': '$data->isPermanent ? Yii::t("sourcebans", "Permanent") : Yii::app()->format->formatLength($data->length*60)',
+		},
+	],
+	'cssFile': false,
+	'enablePagination': false,
+	'enableSorting': false,
+	'itemsCssClass': 'items table table-condensed table-hover',
+	'nullDisplay': C.Html.tag('span', {'class': 'null'}, t('zii', 'Not set')),
+	'rowHtmlOptionsExpression': 'array(
+		"class"=>($data->isExpired ? "expired" : ($data->isUnbanned ? "unbanned" : "")),
+		"data-key"=>$data->primaryKey,
+	)',
+	'selectionChanged': 'js:function(grid) {
+		var $header = $("#" + grid + " tr.selected");
+		var id      = $header.data("key");
+		
+		location.href = "' ~ this.createUrl('site/bans', {'#': '__ID__'}) ~ '".replace("__ID__", id);
+	}',
+	'summaryText': '<em>' ~ t('sourcebans', 'Total bans') ~ ': ' ~ total_bans ~ '</em>',
+}) %}
+    </section>
+    
+    <section class="blocks span6">
+{% do this.widget('zii.widgets.grid.CGridView', {
+	'id': 'blocks-grid',
+	'dataProvider': blocks,
+	'columns': [
+		{
+			'htmlOptions': {
+				'class': 'icon',
+			},
+			'type': 'image',
+			'value': 'Yii::app()->baseUrl . "/images/blocked.png"',
+		},
+		{
+			'headerHtmlOptions': {
+				'class': 'datetime',
+			},
+			'htmlOptions': {
+				'class': 'datetime',
+			},
+			'name': 'create_time',
+			'type': 'datetime',
+		},
+		'ban.name',
+	],
+	'cssFile': false,
+	'enablePagination': false,
+	'enableSorting': false,
+	'itemsCssClass': 'items table table-condensed table-hover',
+	'selectableRows': 0,
+	'summaryText': '<em>' ~ t('sourcebans', 'Total blocked') ~ ': ' ~ total_blocks ~ '</em>',
+}) %}
+    </section>
+    </div>

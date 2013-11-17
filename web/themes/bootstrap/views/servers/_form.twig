@@ -1,0 +1,71 @@
+{% set form = this.beginWidget('CActiveForm', {
+	'id': 'server-form',
+	'action': action is defined ? action : null,
+	'enableAjaxValidation': true,
+	'enableClientValidation': true,
+	'clientOptions': {
+		'inputContainer': '.control-group',
+		'validateOnSubmit': true,
+	},
+	'errorMessageCssClass': 'help-inline',
+	'htmlOptions': {
+		'class': 'form-horizontal',
+	},
+}) %}
+
+  <div class="control-group">
+    {{ form.labelEx(model, 'ip', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.textField(model, 'ip', {'size': 15, 'maxlength': 15}) }}
+      {{ form.error(model, 'ip') }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.labelEx(model, 'port', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.textField(model, 'port', {'placeholder': 27015}) }}
+      {{ form.error(model, 'port') }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.labelEx(model, 'rcon', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.passwordField(model, 'rcon', {'size': 32, 'maxlength': 32}) }}
+      {{ form.error(model, 'rcon') }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.label(model, 'game_id', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.dropDownList(model, 'game_id', C.Html.listData(SB.Game.model.findAll({'order': 't.name'}), 'id', 'name')) }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    <div class="controls">
+      {% set enabled = form.checkBox(model, 'enabled') ~ model.getAttributeLabel('enabled') %}
+      {{ C.Html.label(enabled, 'SBServer_enabled', {'class': 'checkbox'}) }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.label(model, 'groups.name', {'class': 'control-label'}) }}
+    <div class="controls">
+{% set groups = C.Html.listData(model.groups, 'id', 'id') %}
+{% for server_group in SB.ServerGroup.model.findAll({'order': 't.name'}) %}
+      {% set checkbox = C.Html.checkBox('SBServer[groups][' ~ server_group.id ~ ']', server_group.id in groups, {'value': server_group.id}) ~ server_group.name|e %}
+      {{ C.Html.label(checkbox, 'SBServer_groups_' ~ server_group.id, {'class': 'checkbox'}) }}
+{% endfor %}
+    </div>
+  </div>
+
+  <div class="control-group buttons">
+    <div class="controls">
+      {{ C.Html.submitButton(t('sourcebans', 'Save'), {'class': 'btn'}) }}
+    </div>
+  </div>
+
+{% do this.endWidget %}

@@ -65,6 +65,17 @@ return CMap::mergeArray(
 				// enable cookie-based authentication
 				'allowAutoLogin'=>true,
 			),
+			'viewRenderer' => array(
+				'class'=>'ext.ETwigViewRenderer',
+				'functions'=>array(
+					't'=>'Yii::t',
+				),
+				'globals'=>array(
+					'SourceBans'=>'SourceBans',
+					'Yii'=>'Yii',
+					'YII_DEBUG'=>YII_DEBUG,
+				),
+			),
 			// extensions
 			'bootstrap'=>array(
 				'class'=>'bootstrap.components.Bootstrap',

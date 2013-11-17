@@ -1,0 +1,57 @@
+<div class="row">
+  <section class="span12">
+{% set form = this.beginWidget('CActiveForm', {
+	'id': 'protestban-form',
+	'enableAjaxValidation': true,
+	'enableClientValidation': true,
+	'clientOptions': {
+		'inputContainer': '.control-group',
+		'validateOnSubmit': true,
+	},
+	'errorMessageCssClass': 'help-inline',
+	'htmlOptions': {
+		'class': 'form-horizontal',
+	},
+}) %}
+
+      <div class="control-group">
+        {{ form.labelEx(model, 'ban_steam', {'class': 'control-label'}) }}
+        <div class="controls">
+          {{ form.textField(model, 'ban_steam') }}
+          {{ form.error(model, 'ban_steam') }}
+        </div>
+      </div>
+
+      <div class="control-group">
+        {{ form.labelEx(model, 'ban_ip', {'class': 'control-label'}) }}
+        <div class="controls">
+          {{ form.textField(model, 'ban_ip') }}
+          {{ form.error(model, 'ban_ip') }}
+        </div>
+      </div>
+
+      <div class="control-group">
+        {{ form.labelEx(model, 'reason', {'class': 'control-label'}) }}
+        <div class="controls">
+          {{ form.textArea(model, 'reason') }}
+          {{ form.error(model, 'reason') }}
+        </div>
+      </div>
+
+      <div class="control-group">
+        {{ form.labelEx(model, 'user_email', {'class': 'control-label'}) }}
+        <div class="controls">
+          {{ form.textField(model, 'user_email') }}
+          {{ form.error(model, 'user_email') }}
+        </div>
+      </div>
+
+      <div class="control-group buttons">
+        <div class="controls">
+          {{ C.Html.submitButton(t('sourcebans', 'Submit'), {'class': 'btn'}) }}
+        </div>
+      </div>
+
+{% do this.endWidget %}
+  </section>
+</div>

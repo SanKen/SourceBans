@@ -1,0 +1,118 @@
+<div class="row">
+  <section class="span12">
+{% set form = this.beginWidget('CActiveForm', {
+	'id': 'submitban-form',
+	'enableAjaxValidation': true,
+	'enableClientValidation': true,
+	'clientOptions': {
+		'inputContainer': '.control-group',
+		'validateOnSubmit': true,
+	},
+	'errorMessageCssClass': 'help-inline',
+	'htmlOptions': {
+		'class': 'form-horizontal',
+		'enctype': 'multipart/form-data',
+	},
+}) %}
+
+      <div class="control-group">
+        {{ form.labelEx(model, 'steam', {'class': 'control-label'}) }}
+        <div class="controls">
+          {{ form.textField(model, 'steam') }}
+          {{ form.error(model, 'steam') }}
+        </div>
+      </div>
+
+      <div class="control-group">
+        {{ form.labelEx(model, 'ip', {'class': 'control-label'}) }}
+        <div class="controls">
+          {{ form.textField(model, 'ip') }}
+          {{ form.error(model, 'ip') }}
+        </div>
+      </div>
+
+      <div class="control-group">
+        {{ form.labelEx(model, 'name', {'class': 'control-label'}) }}
+        <div class="controls">
+          {{ form.textField(model, 'name') }}
+          {{ form.error(model, 'name') }}
+        </div>
+      </div>
+
+      <div class="control-group">
+        {{ form.labelEx(model, 'reason', {'class': 'control-label'}) }}
+        <div class="controls">
+          {{ form.textArea(model, 'reason') }}
+          {{ form.error(model, 'reason') }}
+        </div>
+      </div>
+
+      <div class="control-group">
+        {{ form.labelEx(model, 'user_name', {'class': 'control-label'}) }}
+        <div class="controls">
+          {{ form.textField(model, 'user_name') }}
+          {{ form.error(model, 'user_name') }}
+        </div>
+      </div>
+
+      <div class="control-group">
+        {{ form.labelEx(model, 'user_email', {'class': 'control-label'}) }}
+        <div class="controls">
+          {{ form.textField(model, 'user_email') }}
+          {{ form.error(model, 'user_email') }}
+        </div>
+      </div>
+
+      <div class="control-group">
+        {{ form.labelEx(model, 'server_id', {'class': 'control-label'}) }}
+        <div class="controls">
+          <select class="span6" id="SBSubmission_server_id" name="SBSubmission[server_id]">
+            <option value="">- {{ t('sourcebans', 'Unknown') }} -</option>
+{% for game in games %}
+            <optgroup label="{{ game.name }}">
+{% for server in game.servers %}
+              <option value="{{ server.id }}">{{ t('sourcebans', 'components.ServerQuery.loading') ~ ' (' ~ server.ip ~ ':' ~ server.port ~ ')' }}</option>
+{% endfor %}
+            </optgroup>
+{% endfor %}
+          </select>
+          {{ form.error(model, 'server_id', null, true, false) }}
+        </div>
+      </div>
+
+      <div class="control-group">
+        {{ C.Html.label(model.getAttributeLabel('demo.filename'), 'SBDemo_filename', {'class': 'control-label'}) }}
+        <div class="controls">
+          <div class="fileupload fileupload-new" data-provides="fileupload">
+            <div class="input-append">
+              <div class="uneditable-input span3"><i class="icon-file fileupload-exists"></i> <span class="fileupload-preview"></span></div>
+              <span class="btn btn-file">
+                <span class="fileupload-new">{{ t('sourcebans', 'Select') }}</span>
+                <span class="fileupload-exists">{{ t('sourcebans', 'Change') }}</span>
+                {{ form.fileField(model.demo, 'filename') }}
+              </span>
+              <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">{{ t('sourcebans', 'Remove') }}</a>
+            </div>
+          </div>
+          {{ form.error(model.demo, 'filename', null, true, false) }}
+        </div>
+      </div>
+
+      <div class="control-group buttons">
+        <div class="controls">
+          {{ C.Html.submitButton(t('sourcebans', 'Submit'), {'class': 'btn'}) }}
+        </div>
+      </div>
+
+{% do this.endWidget %}
+  </section>
+</div>
+
+{% do App.clientScript.registerScript('site_submitban_queryServers', '
+  $.getJSON("' ~ this.createUrl('servers/info') ~ '", function(servers) {
+    $.each(servers, function(i, server) {
+      var $option = $("#SBSubmission_server_id option[value=\\"" + server.id + "\\"]");
+      $option.text(server.error ? server.error.message : server.hostname);
+    });
+  });
+') %}

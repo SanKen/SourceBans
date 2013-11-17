@@ -1,0 +1,143 @@
+{% do App.bootstrap.registerCoreCss %}
+{% do App.bootstrap.registerYiiCss %}
+{% do App.bootstrap.registerCoreScripts %}
+{% do App.clientScript.registerCssFile(App.theme.baseUrl ~ '/css/style.css') %}
+{% do App.clientScript.registerScriptFile(App.baseUrl ~ '/js/sourcebans.js') %}
+{% do App.clientScript.registerScriptFile(App.baseUrl ~ '/js/template.js') %}
+{% do App.clientScript.registerLinkTag('shortcut icon', 'image/x-icon', App.baseUrl ~ '/images/favicon.ico') %}
+<!DOCTYPE html>
+<html lang="{{ App.language }}">
+  <head>
+    <title>{% if this.title is not empty %}{{ this.title ~ App.params.titleSeparator }}{% endif %}{{ App.name }}</title>
+    <meta charset="UTF-8" />
+    <meta name="author" content="GameConnect" />
+    <meta name="copyright" content="SourceBans © 2007-2013 GameConnect.net. All rights reserved." />
+    <meta name="description" content="Advanced admin and ban management for the Source engine" />
+  </head>
+  <body id="{{ this.id ~ '_' ~ this.action.id }}">
+    <header>
+      <div class="container">
+        <div class="navbar">
+          <div class="navbar-inner">
+            {{ C.Html.link(C.Html.image(App.theme.baseUrl ~ '/images/logo.png', App.name|e), ['site/index'], {'class': 'brand'}) }}
+{% do this.widget('zii.widgets.CMenu', {
+	'id': 'tabs',
+	'items': [
+		{
+			'active': this.route == 'site/dashboard' or (this.route == 'site/index' and SourceBans.app.settings.default_page == 'dashboard'),
+			'label': t('sourcebans', 'controllers.site.dashboard.title'),
+			'url': ['site/dashboard'],
+			'linkOptions': {'title': t('sourcebans', 'This page shows an overview of your bans and servers.')},
+		},
+		{
+			'active': this.route == 'site/bans' or (this.route == 'site/index' and SourceBans.app.settings.default_page == 'bans'),
+			'label': t('sourcebans', 'controllers.site.bans.title'),
+			'url': ['site/bans'],
+			'linkOptions': {'title': t('sourcebans', 'All of the bans in the database can be viewed from here.')},
+		},
+		{
+			'active': this.route == 'site/servers' or (this.route == 'site/index' and SourceBans.app.settings.default_page == 'servers'),
+			'label': t('sourcebans', 'controllers.site.servers.title'),
+			'url': ['site/servers'],
+			'linkOptions': {'title': t('sourcebans', 'All of your servers and their status can be viewed here.')},
+		},
+		{
+			'active': this.route == 'site/submitban' or (this.route == 'site/index' and SourceBans.app.settings.default_page == 'submitban'),
+			'label': t('sourcebans', 'controllers.site.submitban.title'),
+			'url': ['site/submitban'],
+			'linkOptions': {'title': t('sourcebans', 'You can submit a demo or screenshot of a suspected cheater here. It will then be up for review by one of the admins.')},
+			'visible': SourceBans.app.settings.enable_submit,
+		},
+		{
+			'active': this.route == 'site/protestban' or (this.route == 'site/index' and SourceBans.app.settings.default_page == 'protestban'),
+			'label': t('sourcebans', 'controllers.site.protestban.title'),
+			'url': ['site/protestban'],
+			'linkOptions': {'title': t('sourcebans', 'Here you can protest your ban. And prove your case as to why you should be unbanned.')},
+			'visible': SourceBans.app.settings.enable_protest,
+		},
+		{
+			'active': this.id == 'admin',
+			'label': t('sourcebans', 'controllers.admin.index.title'),
+			'url': ['admin/index'],
+			'linkOptions': {'title': t('sourcebans', 'This is the control panel for SourceBans where you can setup new admins, add new servers, etc.')},
+			'visible': not App.user.isGuest,
+		},
+	]|merge(this.tabs),
+	'htmlOptions': {
+		'class': 'nav pull-right',
+	},
+}) %}
+          </div>
+        </div>
+      </div>
+      <hr />
+{% do this.widget('bootstrap.widgets.TbAlert', {
+	'block': false,
+	'htmlOptions': {
+		'class': 'page-alert',
+	},
+}) %}
+    </header>
+    
+    <div class="container">
+      <header class="clearfix">
+        <div class="pull-left">
+          <h1>{{ this.pageTitle }}</h1>
+{% do this.widget('bootstrap.widgets.TbBreadcrumbs', {
+	'links': this.breadcrumbs,
+}) %}
+        </div>
+        <div class="pull-right">
+          <form action="{{ this.createUrl('site/bans') }}" class="input-append pull-right" id="search">
+            <input class="span2" placeholder="{{ t('sourcebans', 'Search bans') }}" name="q" type="search" />
+            <button class="btn btn-inverse" type="submit"><i class="icon-search icon-white"></i></button>
+          </form>
+          <nav>
+{% do this.widget('zii.widgets.CMenu', {
+	'id': 'user',
+	'items': [
+		{
+			'label': App.user.name,
+			'url': ['site/account'],
+			'visible': not App.user.isGuest,
+		},
+		{
+			'label': t('sourcebans', 'controllers.site.logout.title'),
+			'url': ['site/logout'],
+			'visible': not App.user.isGuest,
+		},
+		{
+			'label': t('sourcebans', 'controllers.site.login.title'),
+			'url': ['site/login'],
+			'visible': App.user.isGuest,
+		},
+	],
+	'htmlOptions': {
+		'class': 'nav pull-right',
+	},
+	'itemTemplate': '{menu}<span class="divider">|</span>',
+	'lastItemCssClass': 'last',
+}) %}
+          </nav>
+        </div>
+      </header>
+      
+{{ content|raw }}
+      
+    </div>
+    
+    <footer>
+      <hr />
+      <div class="container">
+        <p>
+          {{ C.Html.link(C.Html.image(App.theme.baseUrl ~ '/images/logo_footer.png', 'SourceBans'), 'http://sourcebans.net', {'target': '_blank'}) }}
+          <br /><strong>{{ t('sourcebans', 'Version') }} {{ SourceBans.getVersion }}</strong>
+          <br />"{{ SourceBans.app.quote.text }}" - <em>{{ SourceBans.app.quote.name }}</em>
+        </p>
+{% if YII_DEBUG %}
+        <p><em>{{ App.db.stats[0] }} database queries performed in {{ Yii.getLogger.executionTime|number_format(2) }} seconds.</em></p>
+{% endif %}
+      </div>
+    </footer>
+  </body>
+</html>

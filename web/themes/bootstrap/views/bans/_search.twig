@@ -1,0 +1,75 @@
+{% set form = this.beginWidget('CActiveForm', {
+	'action': App.createUrl(this.route),
+	'method': 'get',
+	'clientOptions': {
+		'inputContainer': '.control-group',
+	},
+	'errorMessageCssClass': 'help-inline',
+	'htmlOptions': {
+		'class': 'form-horizontal',
+	},
+}) %}
+
+  <div class="control-group">
+    {{ form.label(model, 'name', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.textField(model, 'name', {'size': 60, 'maxlength': 64}) }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.label(model, 'steam', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.textField(model, 'steam', {'size': 32, 'maxlength': 32}) }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.label(model, 'ip', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.textField(model, 'ip', {'size': 15, 'maxlength': 15}) }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.label(model, 'reason', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.textField(model, 'reason', {'size': 60, 'maxlength': 255}) }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.label(model, 'create_time', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.textField(model, 'create_time') }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.label(model, 'length', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.dropDownList(model, 'length', SB.Ban.getTimes, {'empty': '- ' ~ t('sourcebans', 'None') ~ ' -'}) }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.label(model, 'admin_id', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.dropDownList(model, 'admin_id', C.Html.listData(SB.Admin.model.findAll({'order': 'name'}), 'id', 'name'), {'empty': '- ' ~ t('sourcebans', 'None') ~ ' -'}) }}
+    </div>
+  </div>
+
+  <div class="control-group">
+    {{ form.label(model, 'server_id', {'class': 'control-label'}) }}
+    <div class="controls">
+      {{ form.dropDownList(model, 'server_id', C.Html.listData(SB.Server.model.enabled.with('game').findAll({'order': 'game.name, t.ip, t.port'}), 'id', 'address', 'game.name'), {'empty': '- ' ~ t('sourcebans', 'None') ~ ' -'}) }}
+    </div>
+  </div>
+
+  <div class="control-group buttons">
+    <div class="controls">
+      {{ C.Html.submitButton(t('sourcebans', 'Search'), {'class': 'btn'}) }}
+    </div>
+  </div>
+
+{% do this.endWidget %}
