@@ -9,8 +9,8 @@
         <tbody>
 {% for admin in admins %}
           <tr>
-            <td>{{ admin.name }}</td>
-            <td>{{ admin.identity }}</td>
+            <td>{{ admin.name|e }}</td>
+            <td>{{ admin.identity|e }}</td>
           </tr>
 {% endfor %}
         </tbody>

@@ -1,16 +1,16 @@
     <div class="row">
     <section class="span12 intro">
 {% if SourceBans.app.settings.dashboard_title is not empty %}
-      <h3>{{ SourceBans.app.settings.dashboard_title }}</h3>
+      <h3>{{ SourceBans.app.settings.dashboard_title|e }}</h3>
 {% endif %}
-      {{ SourceBans.app.settings.dashboard_text|raw }}
+      {{ SourceBans.app.settings.dashboard_text }}
     </section>
     </div>
     
-{{ this.renderPartial('servers', {
+{% do this.renderPartial('servers', {
 	'isDashboard': true,
 	'servers': servers,
-}, true) }}
+}) %}
     
     <div class="row">
     <section class="bans span6">

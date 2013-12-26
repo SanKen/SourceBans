@@ -65,15 +65,15 @@ return CMap::mergeArray(
 				// enable cookie-based authentication
 				'allowAutoLogin'=>true,
 			),
-			'viewRenderer' => array(
+			'viewRenderer'=>array(
 				'class'=>'ext.ETwigViewRenderer',
 				'functions'=>array(
 					't'=>'Yii::t',
 				),
 				'globals'=>array(
+					'LocaleData'=>'LocaleData',
 					'SourceBans'=>'SourceBans',
 					'Yii'=>'Yii',
-					'YII_DEBUG'=>YII_DEBUG,
 				),
 			),
 			// extensions

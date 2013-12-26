@@ -5,7 +5,7 @@
           <ul>
 {% for flag, description in SourceBans.app.flags %}
 {% if flag != constant('SM_ROOT') and App.user.data.hasFlag(flag) %}
-            <li>{{ description }}</li>
+            <li>{{ description|e }}</li>
 {% endif %}
 {% endfor %}
           </ul>
@@ -15,7 +15,7 @@
           <ul>
 {% for name, description in SourceBans.app.permissions %}
 {% if name != 'OWNER' and App.user.data.hasPermission(name) %}
-            <li>{{ description }}</li>
+            <li>{{ description|e }}</li>
 {% endif %}
 {% endfor %}
           </ul>
@@ -56,7 +56,7 @@
   <div class="control-group">
     {{ form.label(model, 'timezone', {'class': 'control-label'}) }}
     <div class="controls">
-      {# form.dropDownList(model, 'timezone', LocaleData.getTimezones, {}'class': 'span6', 'empty': '- ' ~ t('sourcebans', 'Default setting') ~ ' -'}) #}
+      {{ form.dropDownList(model, 'timezone', LocaleData.getTimezones, {'class': 'span6', 'empty': '- ' ~ t('sourcebans', 'Default setting') ~ ' -'}) }}
     </div>
   </div>
 

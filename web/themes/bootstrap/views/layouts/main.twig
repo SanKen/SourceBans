@@ -8,7 +8,7 @@
 <!DOCTYPE html>
 <html lang="{{ App.language }}">
   <head>
-    <title>{% if this.title is not empty %}{{ this.title ~ App.params.titleSeparator }}{% endif %}{{ App.name }}</title>
+    <title>{% if this.title is not empty %}{{ (this.title ~ App.params.titleSeparator)|e }}{% endif %}{{ App.name|e }}</title>
     <meta charset="UTF-8" />
     <meta name="author" content="GameConnect" />
     <meta name="copyright" content="SourceBans © 2007-2013 GameConnect.net. All rights reserved." />
@@ -19,7 +19,7 @@
       <div class="container">
         <div class="navbar">
           <div class="navbar-inner">
-            {{ C.Html.link(C.Html.image(App.theme.baseUrl ~ '/images/logo.png', App.name|e), ['site/index'], {'class': 'brand'}) }}
+            {{ C.Html.link(C.Html.image(App.theme.baseUrl ~ '/images/logo.png', App.name|e), App.homeUrl, {'class': 'brand'}) }}
 {% do this.widget('zii.widgets.CMenu', {
 	'id': 'tabs',
 	'items': [
@@ -82,7 +82,7 @@
     <div class="container">
       <header class="clearfix">
         <div class="pull-left">
-          <h1>{{ this.pageTitle }}</h1>
+          <h1>{{ this.pageTitle|e }}</h1>
 {% do this.widget('bootstrap.widgets.TbBreadcrumbs', {
 	'links': this.breadcrumbs,
 }) %}
@@ -122,7 +122,7 @@
         </div>
       </header>
       
-{{ content|raw }}
+{{ content }}
       
     </div>
     
@@ -134,7 +134,7 @@
           <br /><strong>{{ t('sourcebans', 'Version') }} {{ SourceBans.getVersion }}</strong>
           <br />"{{ SourceBans.app.quote.text }}" - <em>{{ SourceBans.app.quote.name }}</em>
         </p>
-{% if YII_DEBUG %}
+{% if constant('YII_DEBUG') %}
         <p><em>{{ App.db.stats[0] }} database queries performed in {{ Yii.getLogger.executionTime|number_format(2) }} seconds.</em></p>
 {% endif %}
       </div>

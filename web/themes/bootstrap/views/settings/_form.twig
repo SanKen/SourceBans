@@ -53,7 +53,7 @@
   <div class="control-group">
     {{ form.label(model, 'timezone', {'class': 'control-label'}) }}
     <div class="controls">
-      {# form.dropDownList(model, 'timezone', LocaleData.getTimezones, {'class': 'span6'}) #}
+      {{ form.dropDownList(model, 'timezone', LocaleData.getTimezones, {'class': 'span6'}) }}
     </div>
   </div>
 
@@ -160,7 +160,7 @@
   <div class="control-group">
     {{ form.label(model, 'mailer_from', {'class': 'control-label'}) }}
     <div class="controls">
-      {# form.textField(model, 'mailer_from', {'size': 60, 'maxlength': 256, 'placeholder': 'noreply@' ~ $_SERVER['HTTP_HOST']}) #}
+      {{ form.textField(model, 'mailer_from', {'size': 60, 'maxlength': 256, 'placeholder': 'noreply@' ~ App.request.serverHost}) }}
       {{ form.error(model, 'mailer_from') }}
     </div>
   </div>
