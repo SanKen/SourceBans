@@ -13,7 +13,6 @@
  * @property string $auth Authentication type
  * @property string $identity Identity
  * @property string $password Password
- * @property string $password_key Password key
  * @property integer $group_id Web group ID
  * @property string $email Email address
  * @property string $language Language
@@ -43,9 +42,9 @@
  */
 class SBAdmin extends CActiveRecord
 {
-	const IP_AUTH    = 'ip';
-	const NAME_AUTH  = 'name';
-	const STEAM_AUTH = 'steam';
+	const AUTH_IP    = 'ip';
+	const AUTH_NAME  = 'name';
+	const AUTH_STEAM = 'steam';
 	
 	public $new_password;
 	
@@ -106,7 +105,7 @@ class SBAdmin extends CActiveRecord
 			array('email', 'email'),
 			array('email', 'length', 'max'=>128),
 			array('language, theme, timezone, server_password', 'default', 'setOnEmpty'=>true),
-			array('password, password_key, validation_key, login_time, server_groups', 'safe'),
+			array('password, validation_key, login_time, server_groups', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, name, auth, identity, group_id, email, language, theme, login_time, create_time', 'safe', 'on'=>'search'),
@@ -171,16 +170,16 @@ class SBAdmin extends CActiveRecord
 		$criteria=new CDbCriteria;
 		$criteria->with='group';
 
-		$criteria->compare('t.id',$this->id);
-		$criteria->compare('t.name',$this->name,true);
-		$criteria->compare('t.auth',$this->auth,true);
-		$criteria->compare('t.identity',$this->identity,true);
-		$criteria->compare('t.group_id',$this->group_id);
-		$criteria->compare('t.email',$this->email,true);
-		$criteria->compare('t.language',$this->language,true);
-		$criteria->compare('t.theme',$this->theme,true);
-		$criteria->compare('t.login_time',$this->login_time);
-		$criteria->compare('t.create_time',$this->create_time);
+		$criteria->compare('t.id', $this->id);
+		$criteria->compare('t.name', $this->name, true);
+		$criteria->compare('t.auth', $this->auth, true);
+		$criteria->compare('t.identity', $this->identity, true);
+		$criteria->compare('t.group_id', $this->group_id);
+		$criteria->compare('t.email', $this->email, true);
+		$criteria->compare('t.language', $this->language, true);
+		$criteria->compare('t.theme', $this->theme, true);
+		$criteria->compare('t.login_time', $this->login_time);
+		$criteria->compare('t.create_time', $this->create_time);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
@@ -224,7 +223,7 @@ class SBAdmin extends CActiveRecord
 		
 		if(!isset($this->_community))
 		{
-			$this->_community = new SteamProfile($this-communityId);
+			$this->_community = new SteamProfile($this->communityId);
 		}
 		
 		return $this->_community;
@@ -393,13 +392,16 @@ class SBAdmin extends CActiveRecord
 	
 	public function setPassword($password)
 	{
-		$this->password_key = self::getPasswordKey();
-		$this->password = self::getPasswordHash($password, $this->password_key);
+		$this->password = CPasswordHelper::hashPassword($password);
 	}
 	
 	public function validatePassword($password)
 	{
-		return $this->password == self::getPasswordHash($password, $this->password_key);
+		// Backwards compatibility with old password format
+		if(strlen($this->password) == 40)
+			return $this->password == sha1(sha1('SourceBans' . $password));
+		
+		return CPasswordHelper::verifyPassword($password, $this->password);
 	}
 	
 	
@@ -422,39 +424,10 @@ class SBAdmin extends CActiveRecord
 	public static function getAuthTypes()
 	{
 		return array(
-			self::STEAM_AUTH => Yii::t('sourcebans', 'Steam ID'),
-			self::IP_AUTH    => Yii::t('sourcebans', 'IP address'),
-			self::NAME_AUTH  => Yii::t('sourcebans', 'Name'),
+			self::AUTH_STEAM => Yii::t('sourcebans', 'Steam ID'),
+			self::AUTH_IP    => Yii::t('sourcebans', 'IP address'),
+			self::AUTH_NAME  => Yii::t('sourcebans', 'Name'),
 		);
-	}
-	
-	/**
-	 * Returns a random hash based on a password and a password key
-	 * 
-	 * @param string $password the password
-	 * @param string $key the password key
-	 * @return string a random hash
-	 */
-	public static function getPasswordHash($password, $key = null)
-	{
-		if(empty($password))
-			return null;
-		
-		// Backwards compatibility with old password format
-		if(empty($key))
-			return sha1(sha1('SourceBans' . $password));
-		
-		return sha1((str_repeat(chr(0x5C), 64) ^ $key) . pack('H40', sha1((str_repeat(chr(0x36), 64) ^ $key) . $password)));
-	}
-	
-	/**
-	 * Returns a random password key
-	 * 
-	 * @return string a random password key
-	 */
-	public static function getPasswordKey()
-	{
-		return sprintf('%08x%08x%08x%08x', mt_rand(), mt_rand(), mt_rand(), mt_rand());
 	}
 	
 	
@@ -468,15 +441,20 @@ class SBAdmin extends CActiveRecord
 			$criteria->params = array(':admin_id' => $this->id);
 			$this->commandBuilder->createDeleteCommand('{{admins_server_groups}}', $criteria)->execute();
 			
-			// Insert new server groups, order by inherit_order
-			$i = 0;
-			foreach((array)$this->server_groups as $group)
+			if($this->server_groups !== array())
 			{
-				$this->commandBuilder->createInsertCommand('{{admins_server_groups}}', array(
-					'admin_id' => $this->id,
-					'group_id' => $group instanceof SBServerGroup ? $group->id : $group,
-					'inherit_order' => ++$i,
-				))->execute();
+				// Insert new server groups, order by inherit_order
+				$i = 0;
+				$server_groups = array();
+				foreach((array)$this->server_groups as $group)
+				{
+					$server_groups[] = array(
+						'admin_id' => $this->id,
+						'group_id' => $group instanceof SBServerGroup ? $group->id : $group,
+						'inherit_order' => ++$i,
+					);
+				}
+				$this->commandBuilder->createMultipleInsertCommand('{{admins_server_groups}}', $server_groups)->execute();
 			}
 		}
 		
@@ -489,7 +467,7 @@ class SBAdmin extends CActiveRecord
 		
 		// Select community ID
 		$select=array(
-			'(CASE '.$t.'.auth WHEN "'.self::STEAM_AUTH.'" THEN 76561197960265728 + CAST(MID('.$t.'.identity, 9, 1) AS UNSIGNED) + CAST(MID('.$t.'.identity, 11, 10) * 2 AS UNSIGNED) END) AS admin_community_id',
+			'(CASE '.$t.'.auth WHEN "'.self::AUTH_STEAM.'" THEN 76561197960265728 + CAST(MID('.$t.'.identity, 9, 1) AS UNSIGNED) + CAST(MID('.$t.'.identity, 11, 10) * 2 AS UNSIGNED) END) AS admin_community_id',
 		);
 		if($this->dbCriteria->select==='*')
 		{
@@ -499,7 +477,7 @@ class SBAdmin extends CActiveRecord
 			'select'=>$select,
 		));
 		
-		return parent::beforeFind();
+		parent::beforeFind();
 	}
 	
 	protected function beforeSave()
@@ -508,7 +486,7 @@ class SBAdmin extends CActiveRecord
 		{
 			$this->setPassword($this->new_password);
 		}
-		if($this->auth == self::STEAM_AUTH)
+		if($this->auth == self::AUTH_STEAM)
 		{
 			$this->identity = strtoupper($this->identity);
 		}

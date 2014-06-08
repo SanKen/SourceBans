@@ -176,7 +176,7 @@
 		},
 		{
 			'label': t('sourcebans', 'Comments'),
-			'url': {0: 'comments/index', 'object_type': constant('SBComment::BAN_TYPE'), 'object_id': '__ID__'},
+			'url': {0: 'comments/index', 'object_type': constant('SBComment::TYPE_BAN'), 'object_id': '__ID__'},
 			'itemOptions': {'class': 'ban-menu-comments'},
 			'visible': not App.user.isGuest and App.user.data.hasPermission('ADD_BANS'),
 		},

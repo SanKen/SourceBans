@@ -1,7 +1,7 @@
 <div class="row">
   <section class="span12">
 {% set form = this.beginWidget('CActiveForm', {
-	'id': 'submitban-form',
+	'id': 'report-form',
 	'enableAjaxValidation': true,
 	'enableClientValidation': true,
 	'clientOptions': {
@@ -66,12 +66,12 @@
       <div class="control-group">
         {{ form.labelEx(model, 'server_id', {'class': 'control-label'}) }}
         <div class="controls">
-          <select class="span6" id="SBSubmission_server_id" name="SBSubmission[server_id]">
+          <select class="span6" id="SBReport_server_id" name="SBReport[server_id]">
             <option value="">- {{ t('sourcebans', 'Unknown') }} -</option>
 {% for game in games %}
             <optgroup label="{{ game.name|e }}">
 {% for server in game.servers %}
-              <option value="{{ server.id }}">{{ t('sourcebans', 'components.ServerQuery.loading') ~ ' (' ~ server.ip ~ ':' ~ server.port ~ ')' }}</option>
+              <option value="{{ server.id }}">{{ t('sourcebans', 'components.ServerQuery.loading') ~ ' (' ~ server ~ ')' }}</option>
 {% endfor %}
             </optgroup>
 {% endfor %}
@@ -108,10 +108,10 @@
   </section>
 </div>
 
-{% do App.clientScript.registerScript('site_submitban_queryServers', '
+{% do App.clientScript.registerScript('site_report_queryServers', '
   $.getJSON("' ~ this.createUrl('servers/info') ~ '", function(servers) {
     $.each(servers, function(i, server) {
-      var $option = $("#SBSubmission_server_id option[value=\\"" + server.id + "\\"]");
+      var $option = $("#SBReport_server_id option[value=\\"" + server.id + "\\"]");
       $option.text(server.error ? server.error.message : server.hostname);
     });
   });

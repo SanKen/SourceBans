@@ -67,7 +67,7 @@ class PluginsController extends Controller
 				?SBPlugin::STATUS_ENABLED
 				:SBPlugin::STATUS_INSTALLED;
 			$plugin->save();
-			SourceBans::log('Plugin installed', 'Plugin "' . $plugin->name . '" was installed');
+			SourceBans::log('Plugin installed', 'Plugin "' . $plugin . '" was installed');
 		}
 		catch(Exception $e)
 		{
@@ -86,12 +86,12 @@ class PluginsController extends Controller
 	{
 		$plugin=$this->loadModel($id);
 		
-		$this->pageTitle=$plugin->name;
+		$this->pageTitle=$plugin;
 		
 		$this->breadcrumbs=array(
 			Yii::t('sourcebans', 'controllers.admin.index.title') => array('admin/index'),
 			Yii::t('sourcebans', 'controllers.admin.settings.menu.plugins') => array('admin/settings', '#'=>'plugins'),
-			$plugin->name,
+			$plugin,
 		);
 		
 		$this->menu=array(
@@ -101,7 +101,7 @@ class PluginsController extends Controller
 		$data = (array)$plugin->runSettings();
 		$data['plugin'] = $plugin;
 		
-		$this->render($plugin->getViewFile('settings'),$data);
+		$this->render($plugin->getViewFile('settings'), $data);
 	}
 
 	public function actionUninstall($id)
@@ -113,7 +113,7 @@ class PluginsController extends Controller
 			$plugin->runUninstall();
 			$plugin->status=0;
 			$plugin->save();
-			SourceBans::log('Plugin uninstalled', 'Plugin "' . $plugin->name . '" was uninstalled', SBLog::WARNING_TYPE);
+			SourceBans::log('Plugin uninstalled', 'Plugin "' . $plugin . '" was uninstalled', SBLog::TYPE_WARNING);
 		}
 		catch(Exception $e)
 		{
@@ -131,15 +131,15 @@ class PluginsController extends Controller
 	/**
 	 * Returns the data model based on the id given in the GET variable.
 	 * If the data model is not found, an HTTP exception will be raised.
-	 * @param integer $id the ID of the model to be loaded
-	 * @return SBGame the loaded model
+	 * @param string $id the ID of the model to be loaded
+	 * @return SBPlugin the loaded model
 	 * @throws CHttpException
 	 */
 	public function loadModel($id)
 	{
 		$model=SBPlugin::model()->findById($id);
 		if($model===null)
-			throw new CHttpException(404,'The requested page does not exist.');
+			throw new CHttpException(404, 'The requested page does not exist.');
 		return $model;
 	}
 }

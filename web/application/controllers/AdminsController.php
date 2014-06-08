@@ -66,7 +66,7 @@ class AdminsController extends Controller
 				$model->server_groups=array();
 			if($model->save())
 			{
-				SourceBans::log('Admin added', 'Admin "' . $model->name . '" was added');
+				SourceBans::log('Admin added', 'Admin "' . $model . '" was added');
 				Yii::app()->user->setFlash('success', Yii::t('sourcebans', 'Saved successfully'));
 				
 				$this->redirect(array('admin/admins','#'=>$model->id));
@@ -88,7 +88,7 @@ class AdminsController extends Controller
 		$this->breadcrumbs=array(
 			Yii::t('sourcebans', 'controllers.admin.index.title') => array('admin/index'),
 			Yii::t('sourcebans', 'controllers.admin.admins.title') => array('admin/admins'),
-			$model->name,
+			$model,
 		);
 		
 		$this->menu=array(
@@ -105,7 +105,7 @@ class AdminsController extends Controller
 				$model->server_groups=array();
 			if($model->save())
 			{
-				SourceBans::log('Admin edited', 'Admin "' . $model->name . '" was edited');
+				SourceBans::log('Admin edited', 'Admin "' . $model . '" was edited');
 				Yii::app()->user->setFlash('success', Yii::t('sourcebans', 'Saved successfully'));
 				
 				$this->redirect(array('admin/admins','#'=>$model->id));
@@ -125,7 +125,7 @@ class AdminsController extends Controller
 	public function actionDelete($id)
 	{
 		$model=$this->loadModel($id);
-		SourceBans::log('Admin deleted', 'Admin "' . $model->name . '" was deleted', SBLog::WARNING_TYPE);
+		SourceBans::log('Admin deleted', 'Admin "' . $model . '" was deleted', SBLog::TYPE_WARNING);
 		$model->delete();
 
 		// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
@@ -184,12 +184,12 @@ class AdminsController extends Controller
 						list($identity, $flags, $password) = array($admins[1][$i], $admins[2][$i], $admins[4][$i]);
 						
 						// Parse authentication type depending on identity
-						if(preg_match(SourceBans::STEAM_PATTERN, $identity))
-							$auth = SBAdmin::STEAM_AUTH;
-						else if($identity{0} == '!' && preg_match(SourceBans::IP_PATTERN, $identity))
-							$auth = SBAdmin::IP_AUTH;
+						if(preg_match(SourceBans::PATTERN_STEAM, $identity))
+							$auth = SBAdmin::AUTH_STEAM;
+						else if($identity{0} == '!' && preg_match(SourceBans::PATTERN_IP, $identity))
+							$auth = SBAdmin::AUTH_IP;
 						else
-							$auth = SBAdmin::NAME_AUTH;
+							$auth = SBAdmin::AUTH_NAME;
 						
 						// Parse flags
 						if($flags{0} == '@')
@@ -229,7 +229,7 @@ class AdminsController extends Controller
 				foreach($kv['players'] as $name => $player)
 				{
 					$admin           = new SBAdmin;
-					$admin->auth     = SBAdmin::STEAM_AUTH;
+					$admin->auth     = SBAdmin::AUTH_STEAM;
 					$admin->name     = $name;
 					$admin->identity = $player['steam'];
 					$admin->save();

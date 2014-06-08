@@ -1,5 +1,5 @@
 {% do this.widget('zii.widgets.grid.CGridView', {
-	'id': (archive is defined ? 'archived' : 'active') ~ '-protests-grid',
+	'id': (archive is defined ? 'archived' : 'active') ~ '-appeals-grid',
 	'dataProvider': model.search({
 		'scopes': archive is defined ? 'archived' : 'active',
 	}),

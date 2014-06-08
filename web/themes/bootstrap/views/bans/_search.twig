@@ -62,7 +62,7 @@
   <div class="control-group">
     {{ form.label(model, 'server_id', {'class': 'control-label'}) }}
     <div class="controls">
-      {{ form.dropDownList(model, 'server_id', C.Html.listData(SB.Server.model.enabled.with('game').findAll({'order': 'game.name, t.ip, t.port'}), 'id', 'address', 'game.name'), {'empty': '- ' ~ t('sourcebans', 'None') ~ ' -'}) }}
+      {{ form.dropDownList(model, 'server_id', C.Html.listData(SB.Server.model.enabled.with('game').findAll({'order': 'game.name, t.host, t.port'}), 'id', 'address', 'game.name'), {'empty': '- ' ~ t('sourcebans', 'None') ~ ' -'}) }}
     </div>
   </div>
 

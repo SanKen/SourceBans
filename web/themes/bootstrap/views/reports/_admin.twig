@@ -1,5 +1,5 @@
 {% do this.widget('zii.widgets.grid.CGridView', {
-	'id': (archive is defined ? 'archived' : 'active') ~ '-submissions-grid',
+	'id': (archive is defined ? 'archived' : 'active') ~ '-reports-grid',
 	'dataProvider': model.search({
 		'scopes': archive is defined ? 'archived' : 'active',
 	}),

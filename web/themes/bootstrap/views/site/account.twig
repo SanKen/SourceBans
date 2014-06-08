@@ -1,7 +1,7 @@
     <section class="tab-pane fade" id="pane-permissions">
       <div class="row-fluid">
         <div class="span6">
-          <h3>{{ t('sourcebans', 'Server permissions') }}</h3>
+          <h3>{{ App.user.data.getAttributeLabel('flags') }}</h3>
           <ul>
 {% for flag, description in SourceBans.app.flags %}
 {% if flag != constant('SM_ROOT') and App.user.data.hasFlag(flag) %}

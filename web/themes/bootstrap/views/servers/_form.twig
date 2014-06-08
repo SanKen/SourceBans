@@ -14,10 +14,10 @@
 }) %}
 
   <div class="control-group">
-    {{ form.labelEx(model, 'ip', {'class': 'control-label'}) }}
+    {{ form.labelEx(model, 'host', {'class': 'control-label'}) }}
     <div class="controls">
-      {{ form.textField(model, 'ip', {'size': 15, 'maxlength': 15}) }}
-      {{ form.error(model, 'ip') }}
+      {{ form.textField(model, 'host', {'size': 15, 'maxlength': 255}) }}
+      {{ form.error(model, 'host') }}
     </div>
   </div>
 

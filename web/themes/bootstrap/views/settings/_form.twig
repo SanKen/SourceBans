@@ -35,18 +35,18 @@
         'dashboard': t('sourcebans', 'controllers.site.dashboard.title'),
         'bans': t('sourcebans', 'controllers.site.bans.title'),
         'servers': t('sourcebans', 'controllers.site.servers.title'),
-        'submitban': t('sourcebans', 'controllers.site.submitban.title'),
-        'protestban': t('sourcebans', 'controllers.site.protestban.title'),
+        'report': t('sourcebans', 'controllers.site.report.title'),
+        'appeal': t('sourcebans', 'controllers.site.appeal.title'),
       }) }}
     </div>
   </div>
 
   <div class="control-group">
     <div class="controls">
-      {% set checkbox = form.checkBox(model, 'enable_submit') ~ model.getAttributeLabel('enable_submit') %}
-      {{ C.Html.label(checkbox, 'SettingsForm_enable_submit', {'class': 'checkbox'}) }}
-      {% set checkbox = form.checkBox(model, 'enable_protest') ~ model.getAttributeLabel('enable_protest') %}
-      {{ C.Html.label(checkbox, 'SettingsForm_enable_protest', {'class': 'checkbox'}) }}
+      {% set checkbox = form.checkBox(model, 'enable_reports') ~ model.getAttributeLabel('enable_reports') %}
+      {{ C.Html.label(checkbox, 'SettingsForm_enable_reports', {'class': 'checkbox'}) }}
+      {% set checkbox = form.checkBox(model, 'enable_appeals') ~ model.getAttributeLabel('enable_appeals') %}
+      {{ C.Html.label(checkbox, 'SettingsForm_enable_appeals', {'class': 'checkbox'}) }}
     </div>
   </div>
 
