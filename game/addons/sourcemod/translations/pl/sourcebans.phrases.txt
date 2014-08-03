@@ -36,4 +36,16 @@
 	{
 		"pl"			"Błąd przy dodawaniu bana, spróbuj ponownie."
 	}
+	"Chat Reason"
+	{
+		"pl"			"Proszę wpisać powód bana na czacie i naciśnij enter. Wpisz '!noreason' by anulować."
+	}
+	"Chat Reason Aborted"
+	{
+		"pl"			"Proces banowania został pomyślnie zatrzymany."
+	}
+	"Select player"
+	{
+		"pl"			"Wybierz Gracza:"
+	}
 }
